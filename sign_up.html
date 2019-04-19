@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./css/signup.css">
+    <title>注册</title>
+</head>
+
+<body>
+    <div class="sign-window">
+
+        <form id="signUpForm" name="signUpForm" action="" method="post">
+            <h1>注册账号</h1>
+            <table>
+                <tbody>
+                    <tr>
+                        <td><label for="email">邮箱：</label></td>
+                        <td><input type="text" name="email" id="email"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="password">密码：</label></td>
+                        <td><input type="password" name="password" id="password"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="confirmpsd">确认密码：</label></td>
+                        <td><input type="password" name="confirmpsd" id="confirmpsd"></td>
+                    </tr>
+                    <tr class="subTr">
+                        <td></td>
+                        <td><input type="submit" value="注册"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/3.4.0/jquery.min.js"></script>
+    <script>
+        $('#signUpForm').on('submit', (e) => {
+            let signList = {}
+            e.preventDefault()
+            let need = ['email', 'password', 'confirmpsd']
+            need.forEach((name) => {
+                signList[name] = $('#signUpForm').find('[name=' + name + ']').val()
+            })
+            if(signList.email === '' || signList.password !== signList.confirmpsd){
+                alert('邮箱或密码格式错误')
+                return
+            }
+            $.post('/signup', signList).then((response) => {
+                console.log(response)
+            }, (response) => {
+                // let {errors} = JSON.parse(response.responseText)
+                let { errors } = response.responseJSON
+                alert(errors)
+            })
+        })
+
+    </script>
+</body>
+
+</html>
