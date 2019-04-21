@@ -4,6 +4,7 @@ var fs = require('fs')
 var url = require('url')
 
 var port = process.env.port || 5555;
+var sessions = {}
 var server = http.createServer(function (request, response) {
 
     var temp = url.parse(request.url, true)
@@ -13,15 +14,16 @@ var server = http.createServer(function (request, response) {
 
     if (path === '/') {
         var string = fs.readFileSync('./index.html', 'utf-8')
-        if (request.headers.cookie) {
-            let cookies = transToObject(request.headers.cookie, '; ')
-            if (cookies['sign_in_email'] === 'undefined') {
-                string = string.replace('___acount___', '未登录，<a href="/sign_in">请登录</a>')
+        if (request.headers.cookie && (sessions !== {})) {
+            let session = transToObject(request.headers.cookie, '; ')
+            let sessionId = session.sessionId
+            if (session['sessionId'] === 'undefined') {
+                string = string.replace('___acount___', '未登录，<a href="/sign_in">请登录</a> 或 <a href="/sign_up">注册</a>')
             } else {
-                string = string.replace('___acount___', cookies.sign_in_email)
+                string = string.replace('___acount___', sessions[sessionId].sign_in_email)
             }
         } else {
-            string = string.replace('___acount___', '未登录，请登录')
+            string = string.replace('___acount___', '未登录，<a href="/sign_in">请登录</a> 或 <a href="/sign_up">注册</a>')
         }
         response.statusCode = 200
         response.setHeader('Content-Type', 'text/html;charset=utf-8')
@@ -43,6 +45,7 @@ var server = http.createServer(function (request, response) {
         getBody(request).then((body) => {
             response.setHeader('Content-Type', 'application/json;charset=utf-8')
             let result = transToObject(body, '&')
+            console.log('当前登陆账户为：')
             console.log(result)
             let { email, password } = result
             if (email.indexOf('@') === -1) {
@@ -60,8 +63,12 @@ var server = http.createServer(function (request, response) {
                     }
                 }
                 if (pass) {
+                    let sessionId = Math.random() * 1000000
+                    sessions[sessionId] = { sign_in_email: email }
+                    console.log('sessions为：')
+                    console.log(sessions)
                     response.statusCode = 200
-                    response.setHeader('Set-Cookie', 'sign_in_email=' + email)
+                    response.setHeader('Set-Cookie', 'sessionId=' + sessionId)
                     response.write('{"success":"regist success!"}')
                 } else {
                     response.statusCode = 400
@@ -72,10 +79,11 @@ var server = http.createServer(function (request, response) {
         })
     } else if (path === '/signout') {
         let cookies = transToObject(request.headers.cookie, '; ')
+        console.log('退出时 cookie 值为：')
         console.log(cookies)
         response.statusCode = 200
         response.setHeader('Content-Type', 'application/json;charset=utf-8')
-        response.setHeader('Set-Cookie', 'sign_in_email=undefined')
+        response.setHeader('Set-Cookie', 'sessionId=undefined')
         response.write('{"errors":"xxxx"}')
         response.end()
     } else if (path === '/sign_up') {
@@ -88,6 +96,7 @@ var server = http.createServer(function (request, response) {
         getBody(request).then((body) => {
             response.setHeader('Content-Type', 'application/json;charset=utf-8')
             let result = transToObject(body, '&')
+            console.log('注册信息为：')
             console.log(result)
             let { email, password, confirmpsd } = result
             if (email.indexOf('@') === -1 || password !== confirmpsd) {
@@ -151,4 +160,4 @@ function transToObject(body, separator) {
     return result
 }
 server.listen(port)
-console.log('(cookie 版本 server)监听 ' + port + '成功，请打开 http://localhost:' + port)
+console.log('(session 版本 server)监听 ' + port + '成功，请打开 http://localhost:' + port)
