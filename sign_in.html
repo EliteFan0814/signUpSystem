@@ -49,25 +49,26 @@
 
             // 以下方法为基于 cookie 的 session 注意：成功 和 失败 返回的值不一样！！！
 
-            // $.post('/signin', signList).then((response_success) => {
-            //     alert('登陆成功！')
-            //     window.location.href = '/'
+            $.post('/signin', signList).then((response_success) => {
+                alert('登陆成功！')
+                window.location.href = '/'
+            }, (response_error) => {
+                // let {errors} = JSON.parse(response_error.responseText)
+                let { errors } = response_error.responseJSON
+                alert(errors)
+            })
+
+            // 以下方法为不基于 cookie 的 session ，使用的是 查询字符串的方法 注意：成功 和 失败 返回的值不一样！！！
+
+            // $.post('/signin_notby_cookie', signList).then((response_success) => {
+            //     localStorage.setItem('sessionId',response_success.sessionId)
+            //     window.location.href = '/?sessionId='+ response_success.sessionId
             // }, (response_error) => {
             //     // let {errors} = JSON.parse(response_error.responseText)
             //     let { errors } = response_error.responseJSON
             //     alert(errors)
             // })
 
-            // 以下方法为不基于 cookie 的 session ，使用的是 查询字符串的方法 注意：成功 和 失败 返回的值不一样！！！
-
-            $.post('/signin_notby_cookie', signList).then((response_success) => {
-                localStorage.setItem('sessionId',response_success.sessionId)
-                window.location.href = '/?sessionId='+ response_success.sessionId
-            }, (response_error) => {
-                // let {errors} = JSON.parse(response_error.responseText)
-                let { errors } = response_error.responseJSON
-                alert(errors)
-            })
         })
 
     </script>

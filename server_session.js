@@ -14,10 +14,10 @@ var server = http.createServer(function (request, response) {
 
     if (path === '/') {
         var string = fs.readFileSync('./index.html', 'utf-8')
-        if (request.headers.cookie && (sessions !== {})) {
+        if (request.headers.cookie) {
             let session = transToObject(request.headers.cookie, '; ')
             let sessionId = session.sessionId
-            if (session['sessionId'] === 'undefined') {
+            if (sessionId === 'undefined') {
                 string = string.replace('___acount___', '未登录，<a href="/sign_in">请登录</a> 或 <a href="/sign_up">注册</a>')
             } else {
                 string = string.replace('___acount___', sessions[sessionId].sign_in_email)
