@@ -16,12 +16,12 @@ var server = http.createServer(function (request, response) {
         if (request.headers.cookie) {
             let cookies = transToObject(request.headers.cookie, '; ')
             if (cookies['sign_in_email'] === 'undefined') {
-                string = string.replace('___acount___', '未登录，<a href="/sign_in">请登录</a>')
+                string = string.replace('___acount___', '未登录，<a href="/sign_in">请登录</a> 或 <a href="/sign_up">注册</a>')
             } else {
                 string = string.replace('___acount___', cookies.sign_in_email)
             }
         } else {
-            string = string.replace('___acount___', '未登录，请登录')
+            string = string.replace('___acount___', '未登录，<a href="/sign_in">请登录</a> 或 <a href="/sign_up">注册</a>')
         }
         response.statusCode = 200
         response.setHeader('Content-Type', 'text/html;charset=utf-8')
@@ -61,7 +61,7 @@ var server = http.createServer(function (request, response) {
                 }
                 if (pass) {
                     response.statusCode = 200
-                    response.setHeader('Set-Cookie', 'sign_in_email=' + email)
+                    response.setHeader('Set-Cookie', 'sign_in_email=' + email+';Max-Age=30')
                     response.write('{"success":"regist success!"}')
                 } else {
                     response.statusCode = 400
