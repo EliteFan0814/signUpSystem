@@ -11,6 +11,7 @@ var server = http.createServer(function (request, response) {
     var query = temp.query
     var method = request.method
 
+    // 主页：检测cookie判断是否登陆
     if (path === '/') {
         var string = fs.readFileSync('./index.html', 'utf-8')
         if (request.headers.cookie) {
@@ -61,10 +62,12 @@ var server = http.createServer(function (request, response) {
                 }
                 if (pass) {
                     response.statusCode = 200
-                    response.setHeader('Set-Cookie', 'sign_in_email=' + email+';Max-Age=30')
-                    response.write('{"success":"regist success!"}')
+                    // 登陆成功，设置 cookie
+                    response.setHeader('Set-Cookie', 'sign_in_email=' + email + ';Max-Age=30')
+                    response.write('{"success":"Sign in success!"}')
+                    console.log(111)
                 } else {
-                    response.statusCode = 400
+                    response.statusCode = 401
                     response.write('{"errors":"来自后端：账号不存在或密码不匹配！"}')
                 }
             }

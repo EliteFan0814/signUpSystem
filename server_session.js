@@ -15,12 +15,14 @@ var server = http.createServer(function (request, response) {
     if (path === '/') {
         var string = fs.readFileSync('./index.html', 'utf-8')
         if (request.headers.cookie) {
-            let session = transToObject(request.headers.cookie, '; ')
-            let sessionId = session.sessionId
+            let cookieObj = transToObject(request.headers.cookie, '; ')
+            let sessionId = cookieObj.sessionId  
             if (sessionId === 'undefined') {
                 string = string.replace('___acount___', '未登录，<a href="/sign_in">请登录</a> 或 <a href="/sign_up">注册</a>')
-            } else {
+            } else if (sessions[sessionId]) {
                 string = string.replace('___acount___', sessions[sessionId].sign_in_email)
+            }else{
+                string = string.replace('___acount___', '未登录，<a href="/sign_in">请登录</a> 或 <a href="/sign_up">注册</a>')
             }
         } else {
             string = string.replace('___acount___', '未登录，<a href="/sign_in">请登录</a> 或 <a href="/sign_up">注册</a>')
@@ -69,7 +71,7 @@ var server = http.createServer(function (request, response) {
                     console.log(sessions)
                     response.statusCode = 200
                     response.setHeader('Set-Cookie', 'sessionId=' + sessionId)
-                    response.write('{"success":"regist success!"}')
+                    response.write('{"success":"Sign in success!"}')
                 } else {
                     response.statusCode = 400
                     response.write('{"errors":"来自后端：账号不存在或密码不匹配！"}')
