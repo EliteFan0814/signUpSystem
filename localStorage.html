@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>localStorage</title>
+</head>
+
+<body>
+    localStorage 内当前数字是：<span class="localnum"></span><br />
+    sessionStorage 内当前数字是：<span class="sessionnum"></span>
+    <script>
+        // 设置 localStorage 相关变量
+        let local_a = localStorage.getItem('local_a')
+        let localNum = document.querySelector('.localnum')
+
+        // 设置 sessionStorage 相关变量
+        let session_a = sessionStorage.getItem('session_a')
+        let sessionNum = document.querySelector('.sessionnum')
+
+        let is_show = localStorage.getItem('is_show')
+
+        if (!is_show) {
+            console.log('欢迎第一次进入我的网站！')
+            localStorage.setItem('is_show', true)
+        } else {
+            console.log('欢迎回来，我的老朋友！')
+        }
+        // localStorage 操作
+        if (!local_a) {
+            local_a = 0
+        } else {
+            local_a = +local_a + 1
+        }
+        localStorage.setItem('local_a', local_a)
+        localNum.innerText = local_a
+
+        // sessionStorage 操作
+        if (!session_a) {
+            session_a = 0
+        } else {
+            session_a = +session_a + 1
+        }
+        sessionStorage.setItem('session_a', session_a)
+        sessionNum.innerText = session_a
+    </script>
+</body>
+
+</html>
