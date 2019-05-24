@@ -13,6 +13,7 @@ var server = http.createServer(function (request, response) {
     var method = request.method
 
     if (path === '/') {
+        // console.log(request.headers)
         var string = fs.readFileSync('./index.html', 'utf-8')
         let query_session = sessions[query.sessionId] // {sign_in_email: 'fan552426811@outlook.com'}
         console.log('query_session 值为：')
